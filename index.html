@@ -43,6 +43,7 @@ nav{position:sticky;top:0;z-index:100;background:#071420;border-bottom:1px solid
 
 /* WEEKLY VIEW */
 #weekly-view{overflow:hidden}
+.day-dots{display:none}
 .day-row{display:flex;gap:12px;padding:14px 16px;overflow-x:auto;flex:1;align-items:flex-start}
 .day-row::-webkit-scrollbar{height:6px}
 .day-row::-webkit-scrollbar-track{background:var(--bg)}
@@ -150,6 +151,98 @@ td.sleep-cell input::-webkit-outer-spin-button,td.sleep-cell input::-webkit-inne
 .btn-ok{background:var(--green);border:none;color:#000;padding:7px 16px;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px}
 .btn-cancel:hover{background:#1a3d5a}
 .btn-ok:hover{filter:brightness(1.1)}
+
+/* ──── RESPONSIVE ──── */
+
+/* Tablet (≤1024px) */
+@media(max-width:1024px){
+  .day-card{flex:0 0 190px}
+  .each-habit-panel{width:185px}
+}
+
+/* Mobile (≤640px) */
+@media(max-width:640px){
+  /* Allow natural scroll on mobile */
+  html,body{height:auto;min-height:100vh}
+  body{overflow-y:auto}
+  .view{overflow:visible;flex:none}
+  .view.active{display:block;overflow:visible}
+
+  /* NAV */
+  nav{flex-wrap:wrap;height:auto;padding:8px 12px;gap:6px}
+  .brand{font-size:14px}
+  .spacer{display:none}
+  .tabs{flex:1;gap:4px}
+  .tab{flex:1;text-align:center;padding:6px 8px;font-size:12px}
+  .week-nav{width:100%;justify-content:center;padding:4px 0 2px}
+  .week-label{font-size:11px}
+  .nav-btn{width:34px;height:34px}
+
+  /* WEEKLY: one-card snap scroll */
+  #weekly-view{overflow:visible}
+  .day-dots{
+    display:flex;justify-content:center;gap:6px;
+    padding:8px 0 4px;
+    background:var(--bg);
+  }
+  .day-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--border);transition:background .2s;cursor:pointer;
+  }
+  .day-dot.active{background:var(--green)}
+  .day-row{
+    padding:8px 10px 14px;gap:10px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .day-row::-webkit-scrollbar{display:none}
+  .day-card{
+    flex:0 0 calc(100vw - 20px);
+    max-width:440px;
+    scroll-snap-align:start;
+  }
+  .chart-wrap canvas{width:130px!important;height:130px!important}
+  .task-list{max-height:220px}
+
+  /* MONTHLY header: wrap stats */
+  .month-header{flex-wrap:wrap;padding:10px 12px;gap:10px}
+  .month-nav-wrap{order:0}
+  .month-name{font-size:14px;min-width:100px}
+  .month-stat{flex:1;min-width:100px}
+  .month-stat-val{font-size:16px}
+  .progress-wrap{order:10;width:100%;max-width:100%;flex:none}
+  .add-habit-btn{order:11;margin-left:0;width:100%}
+
+  /* MONTHLY body: stack vertically */
+  #monthly-view{overflow:visible}
+  .month-body{flex-direction:column;overflow:visible;height:auto}
+  .month-body>div:first-child{overflow:visible;display:block;height:auto}
+  .habit-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .each-habit-panel{
+    width:100%;border-left:none;
+    border-top:1px solid var(--border);
+  }
+  .ehp-list{max-height:none;overflow:visible}
+  .daily-chart-section{flex-shrink:0}
+  .daily-chart-wrap{height:100px}
+
+  /* Larger tap targets */
+  td.habit-cell{width:32px;height:32px}
+  .hcb{width:20px;height:20px}
+  .tcb{width:20px;height:20px}
+
+  /* Modals */
+  .modal{width:95%;padding:16px;min-width:0}
+}
+
+/* Small phones (≤380px) */
+@media(max-width:380px){
+  .tab{font-size:11px;padding:5px 6px}
+  .month-name{font-size:13px}
+  .month-stat-val{font-size:14px}
+}
 </style>
 </head>
 <body>
@@ -169,6 +262,7 @@ td.sleep-cell input::-webkit-outer-spin-button,td.sleep-cell input::-webkit-inne
 </nav>
 
 <div id="weekly-view" class="view active">
+  <div class="day-dots" id="day-dots"></div>
   <div class="day-row" id="day-row"></div>
 </div>
 
@@ -339,8 +433,10 @@ const DAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','
 function renderWeekly(){
   const row=document.getElementById('day-row');
   row.innerHTML='';
+  // destroy existing charts
   Object.values(chartInstances).forEach(c=>{try{c.destroy();}catch(e){}});
   chartInstances={};
+  renderDayDots();
 
   const start=currentWeekStart;
   const end=addDays(start,6);
@@ -883,8 +979,66 @@ function deleteHabit(hid){
   renderMonthly();
 }
 
+// ─── MOBILE DAY DOTS ─────────────────────────────────────────────────────────
+function renderDayDots(){
+  const wrap = document.getElementById('day-dots');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  for(let i=0;i<7;i++){
+    const dot = document.createElement('div');
+    dot.className = 'day-dot' + (i===0?' active':'');
+    dot.dataset.idx = i;
+    dot.onclick = () => scrollToDay(i);
+    wrap.appendChild(dot);
+  }
+}
+
+function scrollToDay(idx){
+  const row = document.getElementById('day-row');
+  const cards = row.querySelectorAll('.day-card');
+  if(cards[idx]){
+    cards[idx].scrollIntoView({behavior:'smooth', block:'nearest', inline:'start'});
+  }
+  updateDayDots(idx);
+}
+
+function updateDayDots(idx){
+  document.querySelectorAll('.day-dot').forEach((d,i)=>{
+    d.classList.toggle('active', i===idx);
+  });
+}
+
+function initScrollDots(){
+  const row = document.getElementById('day-row');
+  if(!row) return;
+  row.addEventListener('scroll', () => {
+    const cards = row.querySelectorAll('.day-card');
+    let closest = 0, minDist = Infinity;
+    cards.forEach((c,i)=>{
+      const dist = Math.abs(c.getBoundingClientRect().left - row.getBoundingClientRect().left);
+      if(dist < minDist){ minDist=dist; closest=i; }
+    });
+    updateDayDots(closest);
+  }, {passive:true});
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 seedIfNeeded();
 renderWeekly();
+renderDayDots();
+initScrollDots();
+
+// Auto-scroll to today's card on load
+(function scrollToToday(){
+  const today = new Date();
+  const dow = today.getDay();
+  const idx = dow===0 ? 6 : dow-1;
+  const monMs = getMonday(today).getTime();
+  const curMs = currentWeekStart.getTime();
+  if(Math.abs(monMs - curMs) < 1000){
+    setTimeout(()=>{ scrollToDay(idx); }, 200);
+  }
+})();
 </script>
 </body>
 </html>
