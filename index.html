@@ -43,7 +43,6 @@ nav{position:sticky;top:0;z-index:100;background:#071420;border-bottom:1px solid
 
 /* WEEKLY VIEW */
 #weekly-view{overflow:hidden}
-.day-dots{display:none}
 .day-row{display:flex;gap:12px;padding:14px 16px;overflow-x:auto;flex:1;align-items:flex-start}
 .day-row::-webkit-scrollbar{height:6px}
 .day-row::-webkit-scrollbar-track{background:var(--bg)}
@@ -69,7 +68,7 @@ nav{position:sticky;top:0;z-index:100;background:#071420;border-bottom:1px solid
 /* SQUARE CHECKBOXES */
 .tcb{width:18px;height:18px;border:2px solid var(--border);border-radius:3px;flex-shrink:0;cursor:pointer;position:relative;background:transparent;transition:all .1s}
 .tcb.on{background:var(--green);border-color:var(--green)}
-.tcb.on::after{content:'\2713';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000;line-height:1}
+.tcb.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000;line-height:1}
 
 .stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;font-size:12px;font-weight:600}
 .stat-done{background:var(--done-bg);color:var(--done-fg)}
@@ -105,21 +104,18 @@ table.habit-tbl thead th{background:var(--card-hdr);color:var(--muted);font-weig
 .week-hdr{background:#0d2235 !important;color:var(--text) !important;font-weight:700;font-size:11px;letter-spacing:.5px}
 .date-hdr{background:#0a1828 !important;font-size:11px;color:var(--muted) !important;height:24px !important}
 .habit-name-cell{text-align:left !important;padding:0 6px 0 10px !important;background:var(--card);color:var(--text);font-size:13px;position:sticky;left:0;z-index:2}
-.habit-name-inner{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:30px}
+.habit-name-inner{display:flex;align-items:center;justify-content:space-between;gap:4px}
 .habit-del{opacity:0;background:none;border:none;color:#e44444;cursor:pointer;font-size:13px;padding:0;line-height:1;flex-shrink:0}
 .habit-name-cell:hover .habit-del{opacity:1}
 td.habit-cell{width:28px;height:28px;background:var(--card)}
 td.habit-cell.null-day{background:#08161f}
-td.sleep-cell{background:var(--card)}
-td.sleep-cell input{width:28px;height:26px;background:transparent;border:none;color:var(--text);text-align:center;font-size:12px;outline:none}
-td.sleep-cell input::-webkit-outer-spin-button,td.sleep-cell input::-webkit-inner-spin-button{-webkit-appearance:none}
 .count-row td{background:#0a1828 !important;color:var(--muted);font-weight:700;font-size:12px;height:26px}
 .count-row .habit-name-cell{background:#0a1828 !important}
 
 /* HABIT CHECKBOXES */
 .hcb{width:18px;height:18px;border:2px solid #284050;border-radius:3px;cursor:pointer;position:relative;background:transparent;transition:all .1s;display:inline-block;flex-shrink:0}
 .hcb.on{background:var(--green);border-color:var(--green)}
-.hcb.on::after{content:'\2713';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000;line-height:1}
+.hcb.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000;line-height:1}
 
 /* EACH HABIT PANEL */
 .each-habit-panel{width:210px;flex-shrink:0;background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
@@ -180,18 +176,8 @@ td.sleep-cell input::-webkit-outer-spin-button,td.sleep-cell input::-webkit-inne
 
   /* WEEKLY: one-card snap scroll */
   #weekly-view{overflow:visible}
-  .day-dots{
-    display:flex;justify-content:center;gap:6px;
-    padding:8px 0 4px;
-    background:var(--bg);
-  }
-  .day-dot{
-    width:8px;height:8px;border-radius:50%;
-    background:var(--border);transition:background .2s;cursor:pointer;
-  }
-  .day-dot.active{background:var(--green)}
   .day-row{
-    padding:8px 10px 14px;gap:10px;
+    padding:10px;gap:10px;
     overflow-x:auto;
     scroll-snap-type:x mandatory;
     -webkit-overflow-scrolling:touch;
@@ -200,11 +186,22 @@ td.sleep-cell input::-webkit-outer-spin-button,td.sleep-cell input::-webkit-inne
   .day-row::-webkit-scrollbar{display:none}
   .day-card{
     flex:0 0 calc(100vw - 20px);
-    max-width:440px;
+    max-width:420px;
     scroll-snap-align:start;
   }
   .chart-wrap canvas{width:130px!important;height:130px!important}
   .task-list{max-height:220px}
+
+  /* Mobile day-dot indicator */
+  .day-dots{
+    display:flex;justify-content:center;gap:6px;
+    padding:6px 0 10px;
+  }
+  .day-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--border);transition:background .2s;cursor:pointer;
+  }
+  .day-dot.active{background:var(--green)}
 
   /* MONTHLY header: wrap stats */
   .month-header{flex-wrap:wrap;padding:10px 12px;gap:10px}
@@ -228,7 +225,7 @@ td.sleep-cell input::-webkit-outer-spin-button,td.sleep-cell input::-webkit-inne
   .daily-chart-section{flex-shrink:0}
   .daily-chart-wrap{height:100px}
 
-  /* Larger tap targets */
+  /* Habit table: larger tap targets */
   td.habit-cell{width:32px;height:32px}
   .hcb{width:20px;height:20px}
   .tcb{width:20px;height:20px}
@@ -332,7 +329,6 @@ td.sleep-cell input::-webkit-outer-spin-button,td.sleep-cell input::-webkit-inne
 const TASK_PREFIX = 'tasks_';
 const HABITS_KEY  = 'habits_list';
 const HCHECK_PREFIX = 'hchecks_';
-const SLEEP_PREFIX  = 'sleep_';
 
 let currentWeekStart = getMonday(new Date());
 let currentMonth = new Date();
@@ -370,8 +366,6 @@ function getHabits(){return JSON.parse(localStorage.getItem(HABITS_KEY)||'null')
 function setHabits(arr){localStorage.setItem(HABITS_KEY,JSON.stringify(arr));}
 function getChecks(monthKey){return JSON.parse(localStorage.getItem(HCHECK_PREFIX+monthKey)||'{}');}
 function setChecks(monthKey,obj){localStorage.setItem(HCHECK_PREFIX+monthKey,JSON.stringify(obj));}
-function getSleep(monthKey){return JSON.parse(localStorage.getItem(SLEEP_PREFIX+monthKey)||'{}');}
-function setSleep(monthKey,obj){localStorage.setItem(SLEEP_PREFIX+monthKey,JSON.stringify(obj));}
 
 // ─── SEED DATA ────────────────────────────────────────────────────────────────
 function seedIfNeeded(){
@@ -460,11 +454,13 @@ function buildDayCard(dayIdx,d,key,tasks){
   card.className='day-card';
   card.id='card-'+key;
 
+  // Header
   const hdr=document.createElement('div');
   hdr.className='day-hdr';
   hdr.innerHTML=`<div class="day-name">${DAY_NAMES[dayIdx]}</div><div class="day-date">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>`;
   card.appendChild(hdr);
 
+  // Chart
   const chartWrap=document.createElement('div');
   chartWrap.className='chart-wrap';
   const canvas=document.createElement('canvas');
@@ -474,11 +470,13 @@ function buildDayCard(dayIdx,d,key,tasks){
   chartWrap.appendChild(canvas);
   card.appendChild(chartWrap);
 
+  // Tasks header
   const tHdr=document.createElement('div');
   tHdr.className='tasks-hdr';
   tHdr.textContent='TASKS';
   card.appendChild(tHdr);
 
+  // Task list
   const tList=document.createElement('div');
   tList.className='task-list';
   tList.id='tlist-'+key;
@@ -487,6 +485,7 @@ function buildDayCard(dayIdx,d,key,tasks){
   });
   card.appendChild(tList);
 
+  // Stats
   const statDone=document.createElement('div');
   statDone.className='stat-row stat-done';
   statDone.id='stat-done-'+key;
@@ -496,15 +495,18 @@ function buildDayCard(dayIdx,d,key,tasks){
   const statUndone=document.createElement('div');
   statUndone.className='stat-row stat-undone';
   statUndone.id='stat-undone-'+key;
-  statUndone.innerHTML=`<span>Not Completed</span><span>${total-done}</span>`;
+  const undone=total-done;
+  statUndone.innerHTML=`<span>Not Completed</span><span>${undone}</span>`;
   card.appendChild(statUndone);
 
+  // Add task btn
   const addBtn=document.createElement('button');
   addBtn.className='add-task-btn';
   addBtn.textContent='+ Add Task';
   addBtn.onclick=()=>openAddTask(key);
   card.appendChild(addBtn);
 
+  // Create chart after DOM append (need slight delay for canvas sizing)
   requestAnimationFrame(()=>createDonutChart(canvas.id, pct));
 
   return card;
@@ -557,11 +559,12 @@ function createDonutChart(canvasId, pct){
     }
   };
   const val=pct;
+  const data=[val, 100-val];
   const instance=new Chart(ctx,{
     type:'doughnut',
     data:{
       datasets:[{
-        data:[val, 100-val],
+        data:data,
         backgroundColor:['#44e644','#1a4040'],
         borderWidth:0,
         _pct:val
@@ -592,6 +595,7 @@ function toggleTask(key, taskId){
   if(!t) return;
   t.done=!t.done;
   setTasks(key,tasks);
+  // Update DOM
   const item=document.getElementById('task-'+key+'-'+taskId);
   if(item){
     item.querySelector('.task-text').className='task-text'+(t.done?' done':'');
@@ -625,6 +629,7 @@ function shiftWeek(dir){
   renderWeekly();
 }
 
+// ADD TASK MODAL
 function openAddTask(key){
   addTaskTarget=key;
   document.getElementById('task-input').value='';
@@ -660,14 +665,14 @@ function renderMonthly(){
   const mk=monthKey(currentMonth);
   const habits=getHabits()||[];
   const checks=getChecks(mk);
-  const sleep=getSleep(mk);
 
   const mname=currentMonth.toLocaleDateString('en-US',{month:'long',year:'numeric'});
   document.getElementById('month-name').textContent=mname;
 
   const days=daysInMonth(y,m);
-  const firstDay=firstDayOfMonth(y,m);
+  const firstDay=firstDayOfMonth(y,m); // 0=Sun
 
+  // Count completed checks for monthly stats
   let totalPossible=0, totalDone=0;
   for(let d=1;d<=days;d++){
     habits.forEach(h=>{
@@ -680,20 +685,43 @@ function renderMonthly(){
   document.getElementById('mp-count').textContent=totalDone;
   document.getElementById('mp-bar').style.width=mpPct+'%';
 
-  buildHabitTable(y,m,mk,habits,checks,sleep,days,firstDay);
+  buildHabitTable(y,m,mk,habits,checks,days,firstDay);
   buildEHP(habits,checks,days);
   buildDailyChart(habits,checks,days);
 }
 
-function buildHabitTable(y,m,mk,habits,checks,sleep,days,firstDay){
+function buildHabitTable(y,m,mk,habits,checks,days,firstDay){
   const wrap=document.getElementById('habit-table-wrap');
   wrap.innerHTML='';
   const tbl=document.createElement('table');
   tbl.className='habit-tbl';
 
-  const weeks=buildWeeksArr(days,firstDay);
+  // Build week structure
+  // firstDay: 0=Sun. We lay out Su-Sa columns.
+  // Week 1 starts with day 1, preceded by empty columns if firstDay>0
+  const totalCols=days+(firstDay); // extra empty at start, no trailing needed for header but we pad
+  const weeks=[];
+  let col=0;
+  // week 1
+  let w={days:[]};
+  for(let i=0;i<firstDay;i++) w.days.push(null);
+  for(let d=1;d<=7-firstDay && d<=days;d++) w.days.push(d);
+  while(w.days.length<7) w.days.push(null);
+  weeks.push(w);
+  let nextDay=8-firstDay;
+  while(nextDay<=days){
+    w={days:[]};
+    for(let i=0;i<7;i++){
+      const dd=nextDay+i;
+      w.days.push(dd<=days?dd:null);
+    }
+    weeks.push(w);
+    nextDay+=7;
+  }
+
   const DAY_LETTERS=['Su','Mo','Tu','We','Th','Fr','Sa'];
 
+  // Row 1: "Habits" + Week headers
   const thead=document.createElement('thead');
   const r1=document.createElement('tr');
   const habTh=document.createElement('th');
@@ -710,6 +738,7 @@ function buildHabitTable(y,m,mk,habits,checks,sleep,days,firstDay){
   });
   thead.appendChild(r1);
 
+  // Row 2: Day letters
   const r2=document.createElement('tr');
   weeks.forEach(wk=>{
     DAY_LETTERS.forEach(dl=>{
@@ -721,6 +750,7 @@ function buildHabitTable(y,m,mk,habits,checks,sleep,days,firstDay){
   });
   thead.appendChild(r2);
 
+  // Row 3: Date numbers
   const r3=document.createElement('tr');
   weeks.forEach(wk=>{
     wk.days.forEach(d=>{
@@ -735,6 +765,7 @@ function buildHabitTable(y,m,mk,habits,checks,sleep,days,firstDay){
 
   const tbody=document.createElement('tbody');
 
+  // Habit rows
   habits.forEach(h=>{
     const tr=document.createElement('tr');
     const nameTd=document.createElement('td');
@@ -769,32 +800,7 @@ function buildHabitTable(y,m,mk,habits,checks,sleep,days,firstDay){
     tbody.appendChild(tr);
   });
 
-  const sleepTr=document.createElement('tr');
-  const sleepNameTd=document.createElement('td');
-  sleepNameTd.className='habit-name-cell';
-  sleepNameTd.innerHTML='<span>😴 Hours of Sleep</span>';
-  sleepTr.appendChild(sleepNameTd);
-  weeks.forEach(wk=>{
-    wk.days.forEach(d=>{
-      const td=document.createElement('td');
-      td.className='sleep-cell'+(d===null?' null-day':'');
-      if(d!==null){
-        const inp=document.createElement('input');
-        inp.type='number';inp.min=0;inp.max=24;
-        inp.value=sleep[d]||'';
-        inp.placeholder='–';
-        inp.onchange=()=>{
-          const sv=getSleep(mk);
-          sv[d]=parseFloat(inp.value)||null;
-          setSleep(mk,sv);
-        };
-        td.appendChild(inp);
-      }
-      sleepTr.appendChild(td);
-    });
-  });
-  tbody.appendChild(sleepTr);
-
+  // Count row
   const countTr=document.createElement('tr');
   countTr.className='count-row';
   const countNameTd=document.createElement('td');
@@ -824,6 +830,7 @@ function toggleHabitCheck(mk,hid,day,cb){
   checks[k]=!checks[k];
   setChecks(mk,checks);
   cb.className='hcb'+(checks[k]?' on':'');
+  // Refresh stats
   refreshMonthlyStats(mk);
 }
 
@@ -841,6 +848,7 @@ function refreshMonthlyStats(mk){
   document.getElementById('mp-pct').textContent=pct+'%';
   document.getElementById('mp-count').textContent=td;
   document.getElementById('mp-bar').style.width=pct+'%';
+  // Update count row
   rebuildCountRow(mk,habits,days);
   buildEHP(habits,checks,days);
   buildDailyChart(habits,checks,days);
@@ -853,6 +861,7 @@ function rebuildCountRow(mk,habits,days){
   const countRow=tbl.querySelector('.count-row');
   if(!countRow) return;
   const cells=[...countRow.querySelectorAll('td')].slice(1);
+  // we need the week structure again
   const y=currentMonth.getFullYear();
   const m=currentMonth.getMonth();
   const firstDay=firstDayOfMonth(y,m);
@@ -952,6 +961,7 @@ function shiftMonth(dir){
   renderMonthly();
 }
 
+// ADD HABIT MODAL
 function openAddHabit(){
   document.getElementById('habit-input').value='';
   document.getElementById('habit-modal').classList.add('open');
@@ -979,6 +989,7 @@ function deleteHabit(hid){
   renderMonthly();
 }
 
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 // ─── MOBILE DAY DOTS ─────────────────────────────────────────────────────────
 function renderDayDots(){
   const wrap = document.getElementById('day-dots');
@@ -1022,21 +1033,21 @@ function initScrollDots(){
   }, {passive:true});
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 seedIfNeeded();
 renderWeekly();
 renderDayDots();
 initScrollDots();
 
-// Auto-scroll to today's card on load
+// Scroll to today's card on load
 (function scrollToToday(){
   const today = new Date();
-  const dow = today.getDay();
-  const idx = dow===0 ? 6 : dow-1;
-  const monMs = getMonday(today).getTime();
-  const curMs = currentWeekStart.getTime();
-  if(Math.abs(monMs - curMs) < 1000){
-    setTimeout(()=>{ scrollToDay(idx); }, 200);
+  const dow = today.getDay(); // 0=Sun
+  const idx = dow===0 ? 6 : dow-1; // Mon=0 ... Sun=6
+  const weekDiff = Math.floor((getMonday(today)-getMonday(currentWeekStart))/(7*86400000));
+  if(weekDiff===0){
+    setTimeout(()=>{
+      scrollToDay(idx);
+    }, 200);
   }
 })();
 </script>
