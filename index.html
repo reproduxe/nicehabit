@@ -36,6 +36,8 @@ nav{position:sticky;top:0;z-index:100;background:#071420;border-bottom:1px solid
 .nav-btn{background:var(--card-hdr);border:1px solid var(--border);color:var(--text);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .nav-btn:hover{background:#1a3d5a}
 .week-label{font-size:13px;color:var(--muted);white-space:nowrap}
+.nav-page-link{text-decoration:none;color:var(--muted);font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;white-space:nowrap;transition:all .15s;border:1px solid var(--border)}
+.nav-page-link:hover{background:var(--card-hdr);color:var(--text)}
 
 /* VIEWS */
 .view{display:none;flex:1;overflow:hidden}
@@ -173,6 +175,7 @@ td.habit-cell.null-day{background:#08161f}
   .week-nav{width:100%;justify-content:center;padding:4px 0 2px}
   .week-label{font-size:11px}
   .nav-btn{width:34px;height:34px}
+  .nav-page-link{font-size:11px;padding:4px 8px}
 
   /* WEEKLY: one-card snap scroll */
   #weekly-view{overflow:visible}
@@ -251,6 +254,7 @@ td.habit-cell.null-day{background:#08161f}
     <button class="tab" onclick="switchView('monthly')">Monthly Tracker</button>
   </div>
   <div class="spacer"></div>
+  <a href="planner.html" class="nav-page-link">📅 학습 플래너</a>
   <div class="week-nav" id="week-nav">
     <button class="nav-btn" onclick="shiftWeek(-1)">&#8249;</button>
     <span class="week-label" id="week-label"></span>
@@ -427,7 +431,6 @@ const DAY_NAMES=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','
 function renderWeekly(){
   const row=document.getElementById('day-row');
   row.innerHTML='';
-  // destroy existing charts
   Object.values(chartInstances).forEach(c=>{try{c.destroy();}catch(e){}});
   chartInstances={};
   renderDayDots();
@@ -454,13 +457,11 @@ function buildDayCard(dayIdx,d,key,tasks){
   card.className='day-card';
   card.id='card-'+key;
 
-  // Header
   const hdr=document.createElement('div');
   hdr.className='day-hdr';
   hdr.innerHTML=`<div class="day-name">${DAY_NAMES[dayIdx]}</div><div class="day-date">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>`;
   card.appendChild(hdr);
 
-  // Chart
   const chartWrap=document.createElement('div');
   chartWrap.className='chart-wrap';
   const canvas=document.createElement('canvas');
@@ -470,13 +471,11 @@ function buildDayCard(dayIdx,d,key,tasks){
   chartWrap.appendChild(canvas);
   card.appendChild(chartWrap);
 
-  // Tasks header
   const tHdr=document.createElement('div');
   tHdr.className='tasks-hdr';
   tHdr.textContent='TASKS';
   card.appendChild(tHdr);
 
-  // Task list
   const tList=document.createElement('div');
   tList.className='task-list';
   tList.id='tlist-'+key;
@@ -485,7 +484,6 @@ function buildDayCard(dayIdx,d,key,tasks){
   });
   card.appendChild(tList);
 
-  // Stats
   const statDone=document.createElement('div');
   statDone.className='stat-row stat-done';
   statDone.id='stat-done-'+key;
@@ -499,14 +497,12 @@ function buildDayCard(dayIdx,d,key,tasks){
   statUndone.innerHTML=`<span>Not Completed</span><span>${undone}</span>`;
   card.appendChild(statUndone);
 
-  // Add task btn
   const addBtn=document.createElement('button');
   addBtn.className='add-task-btn';
   addBtn.textContent='+ Add Task';
   addBtn.onclick=()=>openAddTask(key);
   card.appendChild(addBtn);
 
-  // Create chart after DOM append (need slight delay for canvas sizing)
   requestAnimationFrame(()=>createDonutChart(canvas.id, pct));
 
   return card;
@@ -595,7 +591,6 @@ function toggleTask(key, taskId){
   if(!t) return;
   t.done=!t.done;
   setTasks(key,tasks);
-  // Update DOM
   const item=document.getElementById('task-'+key+'-'+taskId);
   if(item){
     item.querySelector('.task-text').className='task-text'+(t.done?' done':'');
@@ -629,7 +624,6 @@ function shiftWeek(dir){
   renderWeekly();
 }
 
-// ADD TASK MODAL
 function openAddTask(key){
   addTaskTarget=key;
   document.getElementById('task-input').value='';
@@ -670,9 +664,8 @@ function renderMonthly(){
   document.getElementById('month-name').textContent=mname;
 
   const days=daysInMonth(y,m);
-  const firstDay=firstDayOfMonth(y,m); // 0=Sun
+  const firstDay=firstDayOfMonth(y,m);
 
-  // Count completed checks for monthly stats
   let totalPossible=0, totalDone=0;
   for(let d=1;d<=days;d++){
     habits.forEach(h=>{
@@ -696,13 +689,7 @@ function buildHabitTable(y,m,mk,habits,checks,days,firstDay){
   const tbl=document.createElement('table');
   tbl.className='habit-tbl';
 
-  // Build week structure
-  // firstDay: 0=Sun. We lay out Su-Sa columns.
-  // Week 1 starts with day 1, preceded by empty columns if firstDay>0
-  const totalCols=days+(firstDay); // extra empty at start, no trailing needed for header but we pad
   const weeks=[];
-  let col=0;
-  // week 1
   let w={days:[]};
   for(let i=0;i<firstDay;i++) w.days.push(null);
   for(let d=1;d<=7-firstDay && d<=days;d++) w.days.push(d);
@@ -721,7 +708,6 @@ function buildHabitTable(y,m,mk,habits,checks,days,firstDay){
 
   const DAY_LETTERS=['Su','Mo','Tu','We','Th','Fr','Sa'];
 
-  // Row 1: "Habits" + Week headers
   const thead=document.createElement('thead');
   const r1=document.createElement('tr');
   const habTh=document.createElement('th');
@@ -738,7 +724,6 @@ function buildHabitTable(y,m,mk,habits,checks,days,firstDay){
   });
   thead.appendChild(r1);
 
-  // Row 2: Day letters
   const r2=document.createElement('tr');
   weeks.forEach(wk=>{
     DAY_LETTERS.forEach(dl=>{
@@ -750,7 +735,6 @@ function buildHabitTable(y,m,mk,habits,checks,days,firstDay){
   });
   thead.appendChild(r2);
 
-  // Row 3: Date numbers
   const r3=document.createElement('tr');
   weeks.forEach(wk=>{
     wk.days.forEach(d=>{
@@ -765,7 +749,6 @@ function buildHabitTable(y,m,mk,habits,checks,days,firstDay){
 
   const tbody=document.createElement('tbody');
 
-  // Habit rows
   habits.forEach(h=>{
     const tr=document.createElement('tr');
     const nameTd=document.createElement('td');
@@ -800,7 +783,6 @@ function buildHabitTable(y,m,mk,habits,checks,days,firstDay){
     tbody.appendChild(tr);
   });
 
-  // Count row
   const countTr=document.createElement('tr');
   countTr.className='count-row';
   const countNameTd=document.createElement('td');
@@ -830,7 +812,6 @@ function toggleHabitCheck(mk,hid,day,cb){
   checks[k]=!checks[k];
   setChecks(mk,checks);
   cb.className='hcb'+(checks[k]?' on':'');
-  // Refresh stats
   refreshMonthlyStats(mk);
 }
 
@@ -848,7 +829,6 @@ function refreshMonthlyStats(mk){
   document.getElementById('mp-pct').textContent=pct+'%';
   document.getElementById('mp-count').textContent=td;
   document.getElementById('mp-bar').style.width=pct+'%';
-  // Update count row
   rebuildCountRow(mk,habits,days);
   buildEHP(habits,checks,days);
   buildDailyChart(habits,checks,days);
@@ -861,7 +841,6 @@ function rebuildCountRow(mk,habits,days){
   const countRow=tbl.querySelector('.count-row');
   if(!countRow) return;
   const cells=[...countRow.querySelectorAll('td')].slice(1);
-  // we need the week structure again
   const y=currentMonth.getFullYear();
   const m=currentMonth.getMonth();
   const firstDay=firstDayOfMonth(y,m);
@@ -961,7 +940,6 @@ function shiftMonth(dir){
   renderMonthly();
 }
 
-// ADD HABIT MODAL
 function openAddHabit(){
   document.getElementById('habit-input').value='';
   document.getElementById('habit-modal').classList.add('open');
@@ -989,7 +967,6 @@ function deleteHabit(hid){
   renderMonthly();
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 // ─── MOBILE DAY DOTS ─────────────────────────────────────────────────────────
 function renderDayDots(){
   const wrap = document.getElementById('day-dots');
@@ -1038,11 +1015,10 @@ renderWeekly();
 renderDayDots();
 initScrollDots();
 
-// Scroll to today's card on load
 (function scrollToToday(){
   const today = new Date();
-  const dow = today.getDay(); // 0=Sun
-  const idx = dow===0 ? 6 : dow-1; // Mon=0 ... Sun=6
+  const dow = today.getDay();
+  const idx = dow===0 ? 6 : dow-1;
   const weekDiff = Math.floor((getMonday(today)-getMonday(currentWeekStart))/(7*86400000));
   if(weekDiff===0){
     setTimeout(()=>{

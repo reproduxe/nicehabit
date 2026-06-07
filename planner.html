@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>찬솔의 합격 루틴</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: #0d0d14;
+    color: #e8e4f0;
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    padding-bottom: 60px;
+  }
+
+  /* Site Nav */
+  .site-nav {
+    position: sticky; top: 0; z-index: 200;
+    background: #07080f;
+    border-bottom: 1px solid #ffffff0a;
+    display: flex; align-items: center; gap: 4px;
+    padding: 8px 16px;
+  }
+  .site-nav-brand {
+    font-size: 12px; font-weight: 800; color: #4f8ef7;
+    margin-right: 8px; white-space: nowrap;
+  }
+  .site-nav-link {
+    padding: 5px 12px; border-radius: 6px;
+    text-decoration: none; font-size: 12px; font-weight: 700;
+    color: #6666aa; transition: all .15s;
+  }
+  .site-nav-link:hover { background: #1a1a2e; color: #e8e4f0; }
+  .site-nav-link.active { background: #1a1a2e; color: #e8e4f0; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 40px 24px 32px;
+    border-bottom: 1px solid #ffffff12;
+    position: relative;
+    overflow: hidden;
+  }
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid #ffffff08;
+  }
+  .header-content { position: relative; }
+  .label-top {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #4f8ef7;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
+  .subtitle { margin-top: 10px; color: #9b9bb8; font-size: 13px; line-height: 1.6; }
+
+  /* Stats bars */
+  .stats { margin-top: 24px; display: flex; flex-direction: column; gap: 8px; }
+  .stat-row { display: flex; justify-content: space-between; font-size: 11px; color: #9b9bb8; margin-bottom: 4px; }
+  .bar-bg { height: 5px; background: #ffffff10; border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; }
+
+  /* Tabs */
+  .tabs { display: flex; padding: 16px 24px 0; gap: 8px; }
+  .tab-btn {
+    flex: 1; padding: 10px; border-radius: 10px; border: none; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    transition: all 0.2s;
+  }
+  .tab-btn.active { background: #4f8ef7; color: #fff; }
+  .tab-btn.inactive { background: #1a1a2e; color: #6666aa; }
+
+  /* Schedule */
+  .schedule { padding: 16px 24px 0; display: flex; flex-direction: column; gap: 6px; }
+  .item {
+    border-radius: 12px;
+    padding: 12px 14px;
+    transition: all 0.2s;
+    border: 1px solid #ffffff0a;
+    background: #13131f;
+  }
+  .item.clickable { cursor: pointer; }
+  .item-row { display: flex; align-items: center; gap: 12px; }
+  .item-time { font-size: 11px; color: #55556a; min-width: 38px; font-variant-numeric: tabular-nums; }
+  .item-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .item-label { flex: 1; font-size: 14px; font-weight: 600; color: #e8e4f0; }
+  .item-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 99px; }
+  .item-arrow { font-size: 16px; color: #55556a; transition: transform 0.2s; }
+  .item-arrow.open { transform: rotate(180deg); }
+  .item-detail {
+    margin-top: 10px; padding-top: 10px;
+    font-size: 12px; color: #9b9bb8; line-height: 1.7;
+    padding-left: 18px;
+    display: none;
+  }
+  .item-detail.show { display: block; }
+  .detail-duration { margin-left: 8px; font-weight: 700; }
+
+  /* Rules */
+  .section { padding: 28px 24px 0; }
+  .section-label {
+    font-size: 11px; letter-spacing: 3px; color: #f7a94f;
+    font-weight: 700; margin-bottom: 14px; text-transform: uppercase;
+  }
+  .rules { display: flex; flex-direction: column; gap: 8px; }
+  .rule {
+    background: #13131f; border: 1px solid #ffffff0a;
+    border-radius: 12px; padding: 12px 14px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .rule-icon { font-size: 18px; flex-shrink: 0; }
+  .rule-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .rule-desc { font-size: 12px; color: #7777a0; line-height: 1.5; }
+
+  /* Strategy */
+  .strategy {
+    margin: 28px 24px 0;
+    background: #0f1a2e; border: 1px solid #4f8ef722;
+    border-radius: 14px; padding: 18px 16px;
+  }
+  .strategy-label {
+    font-size: 11px; letter-spacing: 2px; color: #4f8ef7;
+    font-weight: 700; margin-bottom: 10px; text-transform: uppercase;
+  }
+  .strategy-body { font-size: 13px; color: #9b9bb8; line-height: 1.8; }
+  .strategy-body b { color: #e8e4f0; }
+  .strategy-note {
+    margin-top: 8px; padding: 8px 10px;
+    background: #4f8ef711; border-radius: 8px;
+    color: #8ab4f8; font-size: 12px;
+  }
+
+  .footer {
+    padding: 24px 24px 0;
+    font-size: 11px; color: #44445a;
+    text-align: center; line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<!-- Site Navigation -->
+<nav class="site-nav">
+  <span class="site-nav-brand">&#127942; 앱 메뉴</span>
+  <a href="index.html" class="site-nav-link">🎯 습관 게임</a>
+  <a href="planner.html" class="site-nav-link active">📅 학습 플래너</a>
+</nav>
+
+<!-- Header -->
+<div class="header">
+  <div class="circle" style="width:200px;height:200px;top:-80px;right:-60px;"></div>
+  <div class="circle" style="width:320px;height:320px;top:-60px;right:-30px;"></div>
+  <div class="circle" style="width:440px;height:440px;top:-40px;right:0px;"></div>
+  <div class="header-content">
+    <div class="label-top">Study Master Plan</div>
+    <h1>찬솔의 합격 루틴</h1>
+    <p class="subtitle">
+      TOEFL 70% · EJU 20% · 취미 10%<br>
+      하루 10시간+ · 7~9시 기상 · 현재 중급(60~80)
+    </p>
+  </div>
+  <div class="stats">
+    <div>
+      <div class="stat-row"><span>TOEFL</span><span style="color:#4f8ef7">7h/day</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:70%;background:#4f8ef7"></div></div>
+    </div>
+    <div>
+      <div class="stat-row"><span>EJU</span><span style="color:#f7a94f">2h/day</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:20%;background:#f7a94f"></div></div>
+    </div>
+    <div>
+      <div class="stat-row"><span>취미</span><span style="color:#5fcf80">1.5h/day</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:10%;background:#5fcf80"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('weekday', this)">평일</button>
+  <button class="tab-btn inactive" onclick="switchTab('weekend', this)">주말</button>
+</div>
+
+<!-- Schedule -->
+<div class="schedule" id="schedule"></div>
+
+<!-- Rules -->
+<div class="section">
+  <div class="section-label">절제 원칙</div>
+  <div class="rules" id="rules"></div>
+</div>
+
+<!-- Strategy -->
+<div class="strategy">
+  <div class="strategy-label">현재 단계 전략 (60→80+)</div>
+  <div class="strategy-body">
+    <b>Reading:</b> 매일 2지문 — 문단 구조 파악 + 추론형 위주<br>
+    <b>Listening:</b> Lecture 음영 필기 습관 형성 최우선<br>
+    <b>Speaking:</b> Task 1 템플릿 완성 → Task 3·4 통합형 순서<br>
+    <b>Writing:</b> Integrated 구조 고정 → Independent 논거 풀 구축
+    <div class="strategy-note">📌 월 1회 Hackers 모의고사로 점수 추적 — 80 돌파 시 EJU 비중 조금씩 올릴 것</div>
+  </div>
+</div>
+
+<div class="footer">
+  매너리즘 방지: 2주마다 세션 순서를 소폭 변경하고<br>
+  월 1회 카페·도서관 등 장소 변화를 주세요.
+</div>
+
+<script>
+const typeConfig = {
+  toefl: { color: "#4f8ef7", bg: "#1a2a4a", label: "TOEFL" },
+  eju:   { color: "#f7a94f", bg: "#3a2a10", label: "EJU" },
+  hobby: { color: "#5fcf80", bg: "#0f2a1a", label: "취미" },
+  life:  { color: "#9b8ea8", bg: "#1e1a25", label: "생활" },
+  break: { color: "#6ee7e7", bg: "#0f2828", label: "휴식" },
+};
+
+const schedule = {
+  weekday: [
+    { time: "07:30", label: "기상 · 세면 · 아침식사", type: "life", duration: 60 },
+    { time: "08:30", label: "TOEFL Reading", type: "toefl", duration: 90, detail: "지문 2세트 + 어휘 암기 20개" },
+    { time: "10:00", label: "TOEFL Listening", type: "toefl", duration: 90, detail: "Lecture 3개 + Conversation 2개" },
+    { time: "11:30", label: "휴식 · 가벼운 스트레칭", type: "break", duration: 30 },
+    { time: "12:00", label: "점심식사", type: "life", duration: 60 },
+    { time: "13:00", label: "TOEFL Speaking", type: "toefl", duration: 60, detail: "Task 1~4 풀이 + 녹음 셀프 피드백" },
+    { time: "14:00", label: "TOEFL Writing", type: "toefl", duration: 90, detail: "Integrated 1편 + Independent 1편" },
+    { time: "15:30", label: "휴식", type: "break", duration: 30 },
+    { time: "16:00", label: "EJU 일본어", type: "eju", duration: 60, detail: "독해 1지문 + 기술 연습" },
+    { time: "17:00", label: "EJU 수학 or 종합과목", type: "eju", duration: 60, detail: "격일 교대 — 수학 문제풀이 / 종합과목 개념" },
+    { time: "18:00", label: "저녁식사 · 휴식", type: "life", duration: 60 },
+    { time: "19:00", label: "TOEFL 복습 · 오답노트", type: "toefl", duration: 90, detail: "당일 오답 정리 + 표현 암기" },
+    { time: "20:30", label: "독서 (취미)", type: "hobby", duration: 60, detail: "자유 독서 — 부담 없이" },
+    { time: "21:30", label: "운동 (취미)", type: "hobby", duration: 30, detail: "홈 트레이닝 or 산책" },
+    { time: "22:00", label: "내일 계획 점검 · 취침 준비", type: "life", duration: 60 },
+    { time: "23:00", label: "취침", type: "life", duration: 0 },
+  ],
+  weekend: [
+    { time: "07:30", label: "기상 · 세면 · 아침식사", type: "life", duration: 60 },
+    { time: "08:30", label: "TOEFL 모의고사", type: "toefl", duration: 180, detail: "주 1회 풀 세트 실전 연습 (R+L+S+W)" },
+    { time: "11:30", label: "휴식", type: "break", duration: 30 },
+    { time: "12:00", label: "점심식사", type: "life", duration: 60 },
+    { time: "13:00", label: "모의고사 오답 분석", type: "toefl", duration: 120, detail: "섹션별 약점 분류 + 노트 정리" },
+    { time: "15:00", label: "EJU 종합 복습", type: "eju", duration: 90, detail: "일본어 · 수학 · 종합과목 주간 정리" },
+    { time: "16:30", label: "휴식", type: "break", duration: 30 },
+    { time: "17:00", label: "자유 시간 · 취미", type: "hobby", duration: 120, detail: "독서 / 운동 / 유튜브 / 산책 — 완전한 휴식" },
+    { time: "19:00", label: "저녁식사", type: "life", duration: 60 },
+    { time: "20:00", label: "다음 주 계획 설정", type: "life", duration: 60, detail: "주간 목표 점검 + 다음 주 루틴 조정" },
+    { time: "21:00", label: "가벼운 독서 · 취침 준비", type: "hobby", duration: 60 },
+    { time: "22:00", label: "취침", type: "life", duration: 0 },
+  ],
+};
+
+const rules = [
+  { icon: "⛔", title: "공부 중 스마트폰 금지", desc: "세션 시작 시 폰을 다른 방에 두거나 뒤집어 놓기" },
+  { icon: "📋", title: "전날 밤 내일 계획 확인", desc: "22:00 루틴으로 '내일의 나'에게 명령서를 남긴다" },
+  { icon: "📝", title: "주간 리뷰 (일요일 저녁)", desc: "목표 달성률 자가 채점 → 다음 주 조정" },
+  { icon: "🔄", title: "격일 EJU 교대", desc: "월·수·금 수학 / 화·목·토 종합과목 — 단조로움 방지" },
+  { icon: "🚫", title: "쉬는 시간에 공부 X", desc: "쉴 때는 진짜 쉬기 — 번아웃 예방이 지속력의 핵심" },
+  { icon: "📊", title: "월 1회 TOEFL 모의 성적 기록", desc: "점수 변화 추적으로 동기 부여 유지" },
+];
+
+let openIndex = null;
+let currentTab = 'weekday';
+
+function renderSchedule(tab) {
+  const container = document.getElementById('schedule');
+  container.innerHTML = '';
+  openIndex = null;
+
+  schedule[tab].forEach((item, i) => {
+    const cfg = typeConfig[item.type];
+    const hasDetail = !!item.detail;
+
+    const div = document.createElement('div');
+    div.className = 'item' + (hasDetail ? ' clickable' : '');
+
+    div.innerHTML = `
+      <div class="item-row">
+        <span class="item-time">${item.time}</span>
+        <div class="item-dot" style="background:${cfg.color};box-shadow:0 0 6px ${cfg.color}88"></div>
+        <span class="item-label">${item.label}</span>
+        <div class="item-tag" style="background:${cfg.color}22;color:${cfg.color}">${cfg.label}</div>
+        ${hasDetail ? `<span class="item-arrow" id="arrow-${i}">▾</span>` : ''}
+      </div>
+      ${hasDetail ? `
+      <div class="item-detail" id="detail-${i}">
+        ${item.detail}
+        ${item.duration > 0 ? `<span class="detail-duration" style="color:${cfg.color}">(${item.duration}분)</span>` : ''}
+      </div>` : ''}
+    `;
+
+    if (hasDetail) {
+      div.addEventListener('click', () => {
+        const detail = document.getElementById(`detail-${i}`);
+        const arrow = document.getElementById(`arrow-${i}`);
+
+        if (openIndex === i) {
+          detail.classList.remove('show');
+          arrow.classList.remove('open');
+          div.style.background = '#13131f';
+          div.style.borderColor = '#ffffff0a';
+          openIndex = null;
+        } else {
+          if (openIndex !== null) {
+            const prevDetail = document.getElementById(`detail-${openIndex}`);
+            const prevArrow = document.getElementById(`arrow-${openIndex}`);
+            const prevItem = prevDetail?.closest('.item');
+            if (prevDetail) prevDetail.classList.remove('show');
+            if (prevArrow) prevArrow.classList.remove('open');
+            if (prevItem) { prevItem.style.background = '#13131f'; prevItem.style.borderColor = '#ffffff0a'; }
+          }
+          detail.classList.add('show');
+          arrow.classList.add('open');
+          div.style.background = cfg.bg;
+          div.style.borderColor = cfg.color + '44';
+          openIndex = i;
+        }
+      });
+    }
+
+    container.appendChild(div);
+  });
+}
+
+function renderRules() {
+  const container = document.getElementById('rules');
+  rules.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'rule';
+    div.innerHTML = `
+      <span class="rule-icon">${r.icon}</span>
+      <div>
+        <div class="rule-title">${r.title}</div>
+        <div class="rule-desc">${r.desc}</div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.className = 'tab-btn inactive';
+  });
+  btn.className = 'tab-btn active';
+  renderSchedule(tab);
+}
+
+renderSchedule('weekday');
+renderRules();
+</script>
+</body>
+</html>
